@@ -23,9 +23,11 @@ Install & compile
 
  ```
  go get github.com/longears/pixelslinger
- go get github.com/davecheney/profile
+ go get github.com/pkg/profile
  go get github.com/droundy/goopt
  ```
+ 
+ If you receive errors using `go get [repo-url]`, a common solution is `go get -u -v [repo-url]`.
 
 1. Compile / run
 
