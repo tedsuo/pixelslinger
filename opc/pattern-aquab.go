@@ -11,7 +11,7 @@ import (
 	"math"
 	"math/rand"
 	"time"
-	"fmt"
+	//"fmt"
 )
 
 
@@ -19,7 +19,7 @@ func MakePatternAquaB(locations []float64) ByteThread {
 
 	var (
 		FLUSH_LENGTH = 4.0 //seconds
-		FLUSH_REFILL = 10.0 //seconds
+		FLUSH_REFILL = 30.0 //seconds
 		FLUSH_REST = 10.0 //seconds
 		FLUSH_CYCLE = FLUSH_LENGTH+FLUSH_REST+FLUSH_REFILL
 		//calculate the positions in the [0,1] domain when flush and refill will happen
@@ -36,10 +36,10 @@ func MakePatternAquaB(locations []float64) ByteThread {
 		FLUSH_JITTER = 5.0
 
 		// number of colour, weight to give each color component
-		nc = 3.0
+		nc = 3.5
 
 		// speck weight
-		SPECK_WEIGHT = 0.2
+		SPECK_WEIGHT = 0.15
 		)
 
 	// get bounding box
@@ -66,9 +66,6 @@ func MakePatternAquaB(locations []float64) ByteThread {
 		// fmt.Printf("%v\n",randomValues[ii])
 	}
 
-	for ii := range locations{
-		fmt.Printf("%v\n", locations[ii])
-	}
 
 	return func(bytesIn chan []byte, bytesOut chan []byte, midiState *midi.MidiState) {
 		for bytes := range bytesIn {
@@ -84,10 +81,10 @@ func MakePatternAquaB(locations []float64) ByteThread {
 				z := locations[ii*3+2]
 				//r := colorutils.Cos(x, t/4, 1, 0, 0.7) // offset, period, min, max
 
-				s1 := colorutils.Cos((z*0.3)*(y*0.3)*(x*0.3)    , t/8, 1, 0.1, 1.0)
-				s3 := colorutils.Cos(x*0.2 + y*0.8, t/16, 1, 0.1, 0.6)
-				s2 := colorutils.Cos(z*0.2, t/20, 1, 0.0, 1.0)
-				s4 := 2.1*s1 + 0.4*s3
+				s1 := colorutils.Cos((z*0.3)*(y*0.3)*(x*0.3)    , t/8, 1, 0.1, 0.7)
+				s3 := colorutils.Cos(x*0.2 + y*0.8, t/4, 1, 0.1, 0.6)
+				s2 := colorutils.Cos(z*0.2, t/10, 1, 0.0, 1.0)
+				s4 := 0.3*s1 + 0.7*s3
 
 				r:= 0.1
 				g:= 0.1
@@ -107,14 +104,14 @@ func MakePatternAquaB(locations []float64) ByteThread {
 				b += (1.000*s2) / nc
 
 				// aquamarine
-				r += (0.495 *s3) /nc
-				g += (1.000 *s3) /nc
-				b += (0.831 *s3) /nc
+				r += (0.000 *s3) /nc
+				g += (0.350 *s3) /nc
+				b += (0.790 *s3) /nc
 
 				// teal
-				r += (0.000 *s4) /nc
-				g += (0.600 *s4) /nc
-				b += (0.700 *s4) /nc
+				r += (0.790 *s4) /nc
+				g += (1.000 *s4) /nc
+				b += (0.890 *s4) /nc
 
 
 				// flushing
