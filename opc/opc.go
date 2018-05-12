@@ -42,6 +42,7 @@ func init() {
 		"test-rgb":        MakePatternTestRGB,
 		"white":           MakePatternWhite,
 		"aqua":						 MakePatternAqua,
+		"colorbox":				 MakePatternSpatialColorBox,
 	}
 }
 
