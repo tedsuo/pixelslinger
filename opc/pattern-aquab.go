@@ -18,28 +18,8 @@ import (
 func MakePatternAquaB(locations []float64) ByteThread {
 
 	var (
-		FLUSH_LENGTH = 4.0 //seconds
-		FLUSH_REFILL = 30.0 //seconds
-		FLUSH_REST = 10.0 //seconds
-		FLUSH_CYCLE = FLUSH_LENGTH+FLUSH_REST+FLUSH_REFILL
-		//calculate the positions in the [0,1] domain when flush and refill will happen
-		// order is: rest, flush, refill
-		FLUSH_POINT = 1.0 - ((FLUSH_LENGTH+FLUSH_REFILL)/FLUSH_CYCLE)
-		REFILL_POINT = 1.0 - (FLUSH_REFILL/FLUSH_CYCLE)
-		UNIT_REST = FLUSH_REST / FLUSH_CYCLE
-		UNIT_REST_FLUSH = (FLUSH_REST + FLUSH_LENGTH) / FLUSH_CYCLE
-		UNIT_FLUSH = FLUSH_LENGTH / FLUSH_CYCLE
-		UNIT_REFILL = FLUSH_REFILL / FLUSH_CYCLE
-
-		// degree to which the stips don't just go up and down in unison
-		// higher is less jitter
-		FLUSH_JITTER = 5.0
-
 		// number of colour, weight to give each color component
 		nc = 3.5
-
-		// speck weight
-		SPECK_WEIGHT = 0.15
 		)
 
 	// get bounding box
@@ -112,56 +92,6 @@ func MakePatternAquaB(locations []float64) ByteThread {
 				r += (0.790 *s4) /nc
 				g += (1.000 *s4) /nc
 				b += (0.890 *s4) /nc
-
-
-				// flushing
-
-				//position in cycle on the interval [0,1]
-				flush_cyc_pos := colorutils.PosMod2(t/FLUSH_CYCLE, 1)
-				//flush part
-				if flush_cyc_pos > FLUSH_POINT && flush_cyc_pos < REFILL_POINT {
-					flush_amount := 1- (flush_cyc_pos - UNIT_REST) / UNIT_FLUSH
-					flush_amount += (s3  / (FLUSH_JITTER))
-					flush_amount += (SPECK_WEIGHT*randomValues[ii])
-					z_amount := (z - min_coord_z) / max_coord_z
-					if flush_amount < z_amount {
-						r = 0
-						g = 0
-						b = 0
-					}
-				}
-				//refill part
-				if flush_cyc_pos > REFILL_POINT {
-					flush_amount :=  (flush_cyc_pos - UNIT_REST_FLUSH) / UNIT_REFILL
-					flush_amount += (s3  / (FLUSH_JITTER))
-					flush_amount += (SPECK_WEIGHT*randomValues[ii])
-					z_amount := (z - min_coord_z) / max_coord_z
-					if flush_amount < z_amount {
-						r = 0
-						g = 0
-						b = 0
-					} else {
-						// to ensure some color while flushing
-						r += 0.0
-						g += 0.2
-						b += 0.2
-					}
-				}
-				//rest part
-				if flush_cyc_pos < FLUSH_POINT {
-					flush_amount := max_coord_z - (0.1*randomValues[ii])
-					z_amount := (z - min_coord_z) / max_coord_z
-					if flush_amount < z_amount {
-						r = 0
-						g = 0
-						b = 0
-					} else {
-						// to ensure some color while flushing
-						r += 0.0
-						g += 0.2
-						b += 0.2
-					}
-				}
 
 
 				bytes[ii*3+0] = colorutils.FloatToByte(r)
