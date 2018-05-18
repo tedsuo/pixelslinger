@@ -54,26 +54,34 @@ func MakePatternAqua(locations []float64) ByteThread {
 				b += (1.000*s2) / nc
 
 				// aquamarine
-				r += (0.495 *s3) /nc
-				g += (1.000 *s3) /nc
-				b += (0.831 *s3) /nc
+				r += (0.495 *s3) / nc
+				g += (1.000 *s3) / nc
+				b += (0.831 *s3) / nc
 
 				// teal
-				r += (0.000 *s4) /nc
-				g += (0.600 *s4) /nc
-				b += (0.700 *s4) /nc
+				r += (0.000 *s4) / nc
+				g += (0.600 *s4) / nc
+				b += (0.700 *s4) / nc
 
 
 				// bluebubbles
-				b += colorutils.Cos(z, math.Pow((z*t), 0.99), 10, 0.0, 0.5) / bs
+                pow1 := math.Pow((z*t), 0.99)
+                pow2 := math.Pow((z*t), 0.985)
+				b += colorutils.Cos(z, pow1 , 10, 0.0, 0.5) / bs
 
 
 				// whitebubbles
-				r += colorutils.Cos(z, math.Pow((z*t), 0.99), 50, 0.0, 0.5) / bs
-				g += colorutils.Cos(z, math.Pow((z*t), 0.99), 50, 0.0, 0.5) / bs
-				b += colorutils.Cos(z, math.Pow((z*t), 0.99), 50, 0.0, 0.5) / bs
+                sb := colorutils.Cos(z, pow2, 50, 0.0, 0.5) / bs
+				r += sb 
+				g += sb
+				b += sb
 
-
+                if z<0.0 {
+                // aquamarine
+				r = ((0.495 *s3) *2) +0.3
+				g = ((1.000 *s3) *2) +0.3
+				b = ((0.831 *s3) *2) +0.3
+                }
 
 				bytes[ii*3+0] = colorutils.FloatToByte(r)
 				bytes[ii*3+1] = colorutils.FloatToByte(g)
