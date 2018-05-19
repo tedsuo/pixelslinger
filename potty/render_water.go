@@ -22,9 +22,10 @@ func (w *WaterEffect) Render(midiState *midi.MidiState, t float64) {
 		s2 := colorutils.Cos(p.Z*0.2, t/10, 1, 0.0, 1.0)
 		s4 := 0.3*s1 + 0.7*s3
 
-		p.Blend(&LightCyan, s1)
-		p.Blend(&DarkCyan, s2)
-		p.Blend(&Aquamarine, s3)
-		p.Blend(&Teal, s4)
+		// p.Color = White
+		p.Color = p.Color.BlendLab(LightCyan, s1)
+		p.Color = p.Color.BlendLab(DarkCyan, s2)
+		p.Color = p.Color.BlendLab(Aquamarine, s3)
+		p.Color = p.Color.BlendLab(Teal, s4)
 	}
 }
