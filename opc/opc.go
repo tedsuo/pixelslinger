@@ -318,31 +318,39 @@ func MakeSendToOpcThread(ipPort string) ByteThread {
 				bytes[ii] = gamma_lookup[bytes[ii+0]]
 			}
 
-			// make and send OPC header
-			channel := byte(0)
-			command := byte(0)
-			lenLowByte := byte(len(bytes) % 256)
-			lenHighByte := byte(len(bytes) / 256)
-			header := []byte{channel, command, lenHighByte, lenLowByte}
-			_, err = conn.Write(header)
-			if err != nil {
-				// net error -- set conn to nil so we can try to make a new one
-				fmt.Println("[opc.SendToOpcThread]", err)
-				conn = nil
-				bytesOut <- bytes
-				continue
+			for channelz := range []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9} {
+				// make and send OPC header
+				channel := byte(channelz)
+				command := byte(0)
+				chanOffsetStart := channelz * 120
+				chanOffsetEnd := channelz*120 + 120
+				localBytes := bytes[chanOffsetStart:chanOffsetEnd]
+
+				lenLowByte := byte(len(localBytes) % 256)
+				lenHighByte := byte(len(localBytes) / 256)
+				header := []byte{channel, command, lenHighByte, lenLowByte}
+				_, err = conn.Write(header)
+				if err != nil {
+					// net error -- set conn to nil so we can try to make a new one
+					fmt.Println("[opc.SendToOpcThread]", err)
+					conn = nil
+					bytesOut <- localBytes
+					continue
+				}
+
+				// send actual pixel values
+				_, err = conn.Write(localBytes)
+				if err != nil {
+					// net error -- set conn to nil so we can try to make a new one
+					fmt.Println("[opc.SendToOpcThread]", err)
+					conn = nil
+					bytesOut <- localBytes
+					continue
+				}
+				bytesOut <- localBytes
+
 			}
 
-			// send actual pixel values
-			_, err = conn.Write(bytes)
-			if err != nil {
-				// net error -- set conn to nil so we can try to make a new one
-				fmt.Println("[opc.SendToOpcThread]", err)
-				conn = nil
-				bytesOut <- bytes
-				continue
-			}
-			bytesOut <- bytes
 		}
 	}
 }
